@@ -1,0 +1,1 @@
+console.log("Cloudboosta Incident Monitoring Dashboard loaded successfully.");
