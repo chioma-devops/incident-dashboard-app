@@ -1,0 +1,18 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Node (if you later add Node.js)
+node_modules/
+
+# Environment files
+.env
+
+# Docker
+docker-compose.override.yml
+
+# VS Code
+.vscode/
