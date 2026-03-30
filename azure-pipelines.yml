@@ -1,0 +1,47 @@
+trigger:
+  - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  imageRepository: 'incident-dashboard'
+  acrName: 'incidentdashboard.azurecr.io'
+  dockerfilePath: 'Dockerfile'
+  tag: '$(Build.BuildId)'
+  manifestRepo: 'https://github.com/chioma-devops/incident-dashboard-manifests.git'
+
+stages:
+  - stage: BuildAndPush
+    displayName: Build and Push Image
+    jobs:
+      - job: Build
+        displayName: Build Docker Image
+        steps:
+          - checkout: self
+
+          - task: Docker@2
+            displayName: Build and Push to ACR
+            inputs:
+              containerRegistry: 'incidentdashboard-acr-connection'
+              repository: '$(imageRepository)'
+              command: 'buildAndPush'
+              Dockerfile: '$(dockerfilePath)'
+              tags: |
+                $(tag)
+
+          - script: |
+              git config --global user.email "buildagent@azuredevops.com"
+              git config --global user.name "Azure DevOps Pipeline"
+
+              git clone https://$(GITHUB_PAT)@github.com/YOUR_GITHUB_NAME/incident-dashboard-manifests.git
+              cd incident-dashboard-manifests
+
+              sed -i "s|image: .*|image: $(acrName)/$(imageRepository):$(tag)|" deployment.yaml
+
+              git add deployment.yaml
+              git commit -m "Update image tag to $(tag)"
+              git push origin main
+            displayName: Update Manifest Repo
+            env:
+              GITHUB_PAT: $(GITHUB_PAT)
