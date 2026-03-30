@@ -34,7 +34,7 @@ stages:
               git config --global user.email "buildagent@azuredevops.com"
               git config --global user.name "Azure DevOps Pipeline"
 
-              git clone https://$(GITHUB_PAT)@github.com/YOUR_GITHUB_NAME/incident-dashboard-manifests.git
+              git clone https://$(GITHUB_PAT)@github.com/chioma-devops/incident-dashboard-manifests.git
               cd incident-dashboard-manifests
 
               sed -i "s|image: .*|image: $(acrName)/$(imageRepository):$(tag)|" deployment.yaml
