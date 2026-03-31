@@ -40,14 +40,14 @@ stages:
               cd incident-dashboard-manifests
 
               sed -i "s|image: .*|image: $(acrName)/$(imageRepository):$(tag)|" deployment.yaml
-              sed -i "s|value: \".*\"|value: \"$(tag)\"|" deployment.yaml
+              sed -i "s|value: \".*\"|value: \"v$(tag)\"|" deployment.yaml
 
               git add deployment.yaml
 
               if git diff --cached --quiet; then
                 echo "No changes to commit."
               else
-                git commit -m "Update image tag to $(tag)"
+                git commit -m "Update image tag to $(tag) and app version to v$(tag)"
                 git push origin main
               fi
             displayName: Update Manifest Repo
