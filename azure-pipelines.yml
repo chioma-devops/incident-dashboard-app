@@ -9,7 +9,6 @@ variables:
   acrName: 'incidentdashboard.azurecr.io'
   dockerfilePath: 'Dockerfile'
   tag: '$(Build.BuildId)'
-  manifestRepo: 'https://github.com/chioma-devops/incident-dashboard-manifests.git'
 
 stages:
   - stage: BuildAndPush
@@ -31,17 +30,25 @@ stages:
                 $(tag)
 
           - script: |
+              set -e
+
               git config --global user.email "buildagent@azuredevops.com"
               git config --global user.name "Azure DevOps Pipeline"
 
+              rm -rf incident-dashboard-manifests
               git clone https://$(GITHUB_PAT)@github.com/chioma-devops/incident-dashboard-manifests.git
               cd incident-dashboard-manifests
 
               sed -i "s|image: .*|image: $(acrName)/$(imageRepository):$(tag)|" deployment.yaml
 
               git add deployment.yaml
-              git commit -m "Update image tag to $(tag)"
-              git push origin main
+
+              if git diff --cached --quiet; then
+                echo "No changes to commit."
+              else
+                git commit -m "Update image tag to $(tag)"
+                git push origin main
+              fi
             displayName: Update Manifest Repo
             env:
               GITHUB_PAT: $(GITHUB_PAT)
