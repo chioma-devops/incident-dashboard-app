@@ -39,8 +39,21 @@ stages:
               git clone https://$(GITHUB_PAT)@github.com/chioma-devops/incident-dashboard-manifests.git
               cd incident-dashboard-manifests
 
-              sed -i "s|image: .*|image: $(acrName)/$(imageRepository):$(tag)|" deployment.yaml
-              sed -i "s|value: \".*\"|value: \"v$(tag)\"|" deployment.yaml
+              sed -i "s|image: incidentdashboard.azurecr.io/incident-dashboard:.*|image: $(acrName)/$(imageRepository):$(tag)|" deployment.yaml
+
+              awk -v ver="v$(tag)" '
+                /name: APP_VERSION/ {
+                  print
+                  getline
+                  sub(/value: ".*"/, "value: \"" ver "\"")
+                  print
+                  next
+                }
+                { print }
+              ' deployment.yaml > deployment.tmp && mv deployment.tmp deployment.yaml
+
+              echo "Updated deployment.yaml:"
+              cat deployment.yaml
 
               git add deployment.yaml
 
