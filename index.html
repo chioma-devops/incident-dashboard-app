@@ -15,6 +15,7 @@
       </div>
       <div class="topbar-right">
         <div class="badge healthy">All Systems Operational</div>
+        <div class="badge healthy">Version: __VERSION__</div>
         <div class="clock-box">
           <span class="clock-label">Live Time</span>
           <span id="live-time" class="clock-time"></span>
@@ -29,7 +30,11 @@
           <p><strong>Environment:</strong> Production</p>
           <p><strong>Cluster:</strong> AKS</p>
           <p><strong>Version:</strong> __VERSION__</p>
+          <p><strong>Build ID:</strong> __BUILD_ID__</p>
+          <p><strong>Deployed At:</strong> __DEPLOY_TIME__</p>
           <p><strong>Status:</strong> Healthy</p>
+          <p><strong>Last Refresh:</strong> <span id="last-refresh">--</span></p>
+          <p><strong>Auto Refresh In:</strong> <span id="refresh-timer">30</span>s</p>
         </div>
       </section>
 
@@ -43,22 +48,45 @@
       </section>
 
       <section class="card">
+        <h2>Deployment Status</h2>
+        <div class="status-grid">
+          <div class="status healthy-card">CI Pipeline<br><span>Passed</span></div>
+          <div class="status healthy-card">Argo CD<br><span>Synced</span></div>
+          <div class="status healthy-card">AKS Rollout<br><span>Successful</span></div>
+        </div>
+      </section>
+
+      <section class="card">
         <h2>Release Information</h2>
         <div class="info-list">
           <p><strong>Release Note:</strong> Auto-deployed through Azure DevOps and Argo CD</p>
-          <p><strong>Last Updated:</strong> March 31, 2026</p>
+          <p><strong>Last Updated:</strong> __DEPLOY_TIME__</p>
           <p><strong>Registry:</strong> Azure Container Registry</p>
           <p><strong>Deployment Model:</strong> GitOps</p>
         </div>
       </section>
 
+      <section class="card">
+        <h2>Recent Activity</h2>
+        <div class="info-list">
+          <p>✔ Container image built and pushed</p>
+          <p>✔ Manifest updated automatically</p>
+          <p>✔ Argo CD sync completed</p>
+        </div>
+      </section>
+
       <section class="card banner-card">
         <h2>Incident Banner</h2>
-        <p class="banner-text">New release deployed successfully. Monitoring dashboard is live on AKS.</p>
+        <p class="banner-text">🚀 Automated deployment successful. The latest version is now live on AKS.</p>
       </section>
     </main>
   </div>
 
   <script src="script.js"></script>
+  <script>
+    setTimeout(() => {
+      location.reload();
+    }, 10000);
+  </script>
 </body>
 </html>

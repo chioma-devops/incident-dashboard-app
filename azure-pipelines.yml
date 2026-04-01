@@ -19,6 +19,18 @@ stages:
         steps:
           - checkout: self
 
+          - script: |
+              set -e
+              DEPLOY_TIME=$(date "+%d %b %Y, %H:%M:%S")
+
+              sed -i "s|__VERSION__|v$(Build.BuildId)|g" index.html
+              sed -i "s|__BUILD_ID__|$(Build.BuildId)|g" index.html
+              sed -i "s|__DEPLOY_TIME__|$DEPLOY_TIME|g" index.html
+
+              echo "Updated dashboard values:"
+              grep -nE "__VERSION__|__BUILD_ID__|__DEPLOY_TIME__|Version:|Build ID:|Deployed At:" index.html || true
+            displayName: Inject build values into dashboard
+
           - task: Docker@2
             displayName: Build and Push to ACR
             inputs:
