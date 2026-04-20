@@ -1,0 +1,80 @@
+trigger:
+  - main
+
+pool:
+  name: SelfHostedLinux
+
+variables:
+  imageRepository: 'incident-dashboard'
+  acrName: 'incidentdashboard.azurecr.io'
+  dockerfilePath: 'Dockerfile'
+  tag: '$(Build.BuildId)'
+
+stages:
+  - stage: BuildAndPush
+    displayName: Build and Push Image
+    jobs:
+      - job: Build
+        displayName: Build Docker Image
+        steps:
+          - checkout: self
+
+          - script: |
+              set -e
+              DEPLOY_TIME=$(date "+%d %b %Y, %H:%M:%S")
+
+              sed -i "s|__VERSION__|v$(Build.BuildId)|g" index.html
+              sed -i "s|__BUILD_ID__|$(Build.BuildId)|g" index.html
+              sed -i "s|__DEPLOY_TIME__|$DEPLOY_TIME|g" index.html
+
+              echo "Updated dashboard values:"
+              grep -nE "__VERSION__|__BUILD_ID__|__DEPLOY_TIME__|Version:|Build ID:|Deployed At:" index.html || true
+            displayName: Inject build values into dashboard
+
+          - task: Docker@2
+            displayName: Build and Push to ACR
+            inputs:
+              containerRegistry: 'incidentdashboard-acr-docker'
+              repository: '$(imageRepository)'
+              command: 'buildAndPush'
+              Dockerfile: '$(dockerfilePath)'
+              tags: |
+                $(tag)
+
+          - script: |
+              set -e
+
+              git config --global user.email "buildagent@azuredevops.com"
+              git config --global user.name "Azure DevOps Pipeline"
+
+              rm -rf incident-dashboard-manifests
+              git clone https://$(GITHUB_PAT)@github.com/chioma-devops/incident-dashboard-manifests.git
+              cd incident-dashboard-manifests
+
+              sed -i "s|image: incidentdashboard.azurecr.io/incident-dashboard:.*|image: $(acrName)/$(imageRepository):$(tag)|" deployment.yaml
+
+              awk -v ver="v$(tag)" '
+                /name: APP_VERSION/ {
+                  print
+                  getline
+                  sub(/value: ".*"/, "value: \"" ver "\"")
+                  print
+                  next
+                }
+                { print }
+              ' deployment.yaml > deployment.tmp && mv deployment.tmp deployment.yaml
+
+              echo "Updated deployment.yaml:"
+              cat deployment.yaml
+
+              git add deployment.yaml
+
+              if git diff --cached --quiet; then
+                echo "No changes to commit."
+              else
+                git commit -m "Update image tag to $(tag) and app version to v$(tag)"
+                git push origin main
+              fi
+            displayName: Update Manifest Repo
+            env:
+              GITHUB_PAT: $(GITHUB_PAT)
