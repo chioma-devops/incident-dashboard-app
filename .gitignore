@@ -16,3 +16,5 @@ docker-compose.override.yml
 
 # VS Code
 .vscode/
+*.mp4
+*:Zone.Identifier
