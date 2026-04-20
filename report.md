@@ -79,19 +79,18 @@ incident-dashboard-manifests/
 ## Docker Configuration
 
 ```dockerfile
-FROM node:18-alpine
+FROM nginx:alpine
 
-WORKDIR /app
+COPY index.html /usr/share/nginx/html/index.html
+COPY style.css /usr/share/nginx/html/style.css
+COPY script.js /usr/share/nginx/html/script.js
 
-COPY package*.json ./
-RUN npm install
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-COPY . .
+EXPOSE 80
 
-EXPOSE 3000
-
-CMD ["npm", "start"]
-```
+CMD ["/entrypoint.sh"]
 
 ---
 
