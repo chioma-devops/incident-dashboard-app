@@ -94,6 +94,8 @@ CMD ["/entrypoint.sh"]
 
 ---
 
+```
+
 ## CI/CD Pipeline (Azure DevOps)
 
 ### Source Code Repository
@@ -103,8 +105,9 @@ CMD ["/entrypoint.sh"]
 *Application source code and pipeline configuration stored in GitHub, acting as the trigger for CI/CD.*
 
 ---
+---
 
-### Pipeline Execution
+## Pipeline Execution
 
 ![Pipeline](screenshots/Azure-DevOps-Pipeline-Execution.png)
 
@@ -112,7 +115,7 @@ CMD ["/entrypoint.sh"]
 
 ---
 
-### Container Registry (ACR)
+## Container Registry (ACR)
 
 ![ACR](screenshots/Azure-Container-Registry.png)
 
@@ -138,7 +141,7 @@ CMD ["/entrypoint.sh"]
       $(Build.BuildId)
 ```
 
-### Manifest Update
+## Manifest Update
 
 ```bash
 sed -i "s|image:.*|image: incidentdashboard.azurecr.io/incident-dashboard:$(Build.BuildId)|" deployment.yaml
@@ -146,17 +149,8 @@ sed -i "s|image:.*|image: incidentdashboard.azurecr.io/incident-dashboard:$(Buil
 
 ---
 
-## Kubernetes Deployment (AKS)
 
-### Cluster Verification
-
-![AKS Nodes](screenshots/AKS-Cluster-Verification.png)
-
-*Verification of AKS cluster connectivity and node readiness using kubectl.*
-
----
-
-### Deployment Configuration
+## Deployment Configuration
 
 ```yaml
 apiVersion: apps/v1
@@ -184,7 +178,7 @@ spec:
 
 ## GitOps Deployment with Argo CD
 
-### Argo CD Synchronisation
+## Argo CD Synchronisation
 
 ![ArgoCD](screenshots/ArgoCD-Application-Dashboard.png)
 
@@ -192,7 +186,7 @@ spec:
 
 ---
 
-### GitOps Trigger
+## GitOps Trigger
 
 ![Git Push](screenshots/Git-Push-Pod-Update.png)
 
@@ -200,9 +194,19 @@ spec:
 
 ---
 
+## Kubernetes Deployment (AKS)
+
+### Cluster Verification
+
+![AKS Nodes](screenshots/AKS-Cluster-Verification.png)
+
+*Verification of AKS cluster connectivity and node readiness using kubectl.*
+
+---
+
 ## Application Exposure
 
-### Live Application (Version v13)
+## Live Application (Version v13)
 
 ![App v13](screenshots/Application-UI.png)
 
@@ -210,7 +214,7 @@ spec:
 
 ---
 
-### Continuous Deployment (Version v17)
+## Continuous Deployment (Version v17)
 
 ![App v17](screenshots/Continuous-Deployment-Result-v17.png)
 
